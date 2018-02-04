@@ -8,7 +8,7 @@ ui <- fluidPage(
       
       radioButtons("pic", "Background photo?:",
                    inline = TRUE,
-                   selected = "No",
+                   selected = "Yes",
                    choices = list("Yes", "No")
       ),
       colourInput("bcol", "Background colour", "pink"),
@@ -73,7 +73,7 @@ create_card <- function(height, width, adj_nbr, pic, file, bcol, rcol, tcol, xco
                            font = fnt,
                            location = "+50+100",
                            boxcolor = xcol,
-                           size = 40) %>%
+                           size = (width*2)/(nchar(my_text))) %>%
     magick::image_annotate(text = "Love You",
                            color = tcol,
                            font = fnt,
@@ -93,12 +93,12 @@ server <- function(input, output, session) {
   
   new_text <- eventReactive(input$ntext, {
     my_text <<- compliments_text(input$adj)
-  })
+  }, ignoreNULL = FALSE)
   
   new_backg <- eventReactive(input$backg, {
     my_background <<- create_background(input$pic, session$clientData$output_image1_height, 
                                         session$clientData$output_image1_width, input$bcol)
-  })
+  }, ignoreNULL = FALSE)
   
   # image1 creates a new PNG file when create_card is called
   output$image1 <- renderImage({
